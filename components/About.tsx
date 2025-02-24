@@ -26,7 +26,7 @@ const About = () => {
           className="underline decoration-dashed text-gray-900 dark:text-gray-50 hover:text-gray-700 dark:hover:text-gray-300"
         >
           dragon boat
-        </Link>, or helping out my lion dance team. I'm starting to learn tennis this year (&apos;25) too.
+        </Link>, or helping out my lion dance team. I&apos;m also starting to learn tennis this year (&apos;25) too.
       </p>
 
       <p className='text-xs md:text-sm lg:text-md xl:text-lg'>
