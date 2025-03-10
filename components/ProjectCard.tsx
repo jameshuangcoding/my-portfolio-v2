@@ -11,7 +11,7 @@ const ProjectCard = ({project}: {project: Project}) => {
             border border-gray-200 dark:border-gray-700 relative group"
         >
             <div className="space-y-2">
-                <h3 className="text-sm md:text-md lg:text-lg xl:text-xl font-bold font-display text-gray-900 dark:text-gray-50 pr-8 ">
+                <h3 className="text-xs md:text-sm lg:text-md xl:text-lg font-bold font-display text-gray-900 dark:text-gray-50 pr-8 ">
                     {project.title}
                 </h3>
                 <p className="text-xs md:text-sm lg:text-md xl:text-lg text-gray-700 dark:text-gray-300 font-sans">

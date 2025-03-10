@@ -34,7 +34,7 @@ const NavBar = () => {
 
   return (
     <nav className='sticky top-0 z-10 bg-light-primary dark:bg-dark-primary min-w-full py-4 mb-4 mt-6'>
-      <div className='flex flex-col md:flex-row md:justify-between m-auto max-w-2xl px-4 md:px-8 lg:px-12 xl:px-16'>
+      <div className='flex flex-col md:flex-row md:justify-between m-auto max-w-2xl px-4 md:px-6 lg:px-8 xl:px-10'>
         {/* Name */}
         <Link href='/' className='font-display font-bold text-3xl mb-2 md:mb-0 text-gray-900 dark:text-gray-50'>
           James Huang
