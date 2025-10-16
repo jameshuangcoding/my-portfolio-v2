@@ -15,7 +15,7 @@ const About = () => {
       <p className={paragraphStyle}>
         Currently, I&apos;m a software engineer intern at{' '}
         <Link
-          href='https://www.chickasaw.com/'
+          href='https://www.verygoodsecurity.com/'
           className='underline decoration-dashed text-gray-900 dark:text-gray-50 hover:text-gray-700 dark:hover:text-gray-300'
         >
           VGS
