@@ -9,14 +9,16 @@ import { useState, useEffect } from 'react';
 
 const NavBar = () => {
   const [darkMode, setDarkMode] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   // Initialize dark mode based on system preference or localStorage
   useEffect(() => {
-    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      setDarkMode(true);
+    setMounted(true);
+    const isDark = localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    setDarkMode(isDark);
+    if (isDark) {
       document.documentElement.classList.add('dark');
     } else {
-      setDarkMode(false);
       document.documentElement.classList.remove('dark');
     }
   }, []);
@@ -43,10 +45,16 @@ const NavBar = () => {
         {/* Navigation Container */}
         <div className='flex flex-col md:flex-row md:items-center gap-4'>
           {/* Nav Links */}
-          <ul className='flex gap-4'>
+          <ul className='flex gap-4 items-center'>
             {navLinks.map((navLink, i) => (
-              <li key={i} className='font-sans text-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50'>
-                <Link href={navLink.path}>{navLink.name}</Link>
+              <li key={i} className='font-sans text-md'>
+                <Link
+                  href={navLink.path}
+                  className='text-gray-700 dark:text-gray-300 hover:text-light-tertiary dark:hover:text-dark-tertiary transition-colors duration-200 relative inline-block pb-1 group'
+                >
+                  {navLink.name}
+                  <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-light-tertiary dark:bg-dark-tertiary group-hover:w-full transition-all duration-200'></span>
+                </Link>
               </li>
             ))}
           </ul>
@@ -56,7 +64,10 @@ const NavBar = () => {
             {/* Icon Links */}
             {links.map((link, i) => (
               <li key={i}>
-                <Link href={link.path} className='text-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50'>
+                <Link
+                  href={link.path}
+                  className='text-xl text-gray-700 dark:text-gray-300 hover:text-light-tertiary dark:hover:text-dark-tertiary transition-colors duration-200 hover:scale-110 inline-block'
+                >
                   {link.icon}
                 </Link>
               </li>
@@ -64,12 +75,14 @@ const NavBar = () => {
 
             {/* Light / Dark Mode Icon */}
             <li className='flex items-center'>
-              <button 
+              <button
                 onClick={toggleDarkMode}
-                className='text-xl text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-50'
+                className='text-xl text-gray-700 dark:text-gray-300 hover:text-light-tertiary dark:hover:text-dark-tertiary transition-all duration-200 hover:scale-110 hover:rotate-12'
                 aria-label='Toggle dark mode'
               >
-                {darkMode ? <FaRegMoon /> : <FaMoon />}
+                <span className='inline-block transition-transform duration-300'>
+                  {mounted ? (darkMode ? <FaRegMoon /> : <FaMoon />) : <FaMoon />}
+                </span>
               </button>
             </li>
           </ul>

@@ -16,7 +16,7 @@ const About = () => {
         Currently, I&apos;m a software engineer intern at{' '}
         <Link
           href='https://www.verygoodsecurity.com/'
-          className='underline decoration-dashed text-gray-900 dark:text-gray-50 hover:text-gray-700 dark:hover:text-gray-300'
+          className='text-light-tertiary dark:text-dark-tertiary hover:underline transition-colors duration-200'
         >
           VGS
         </Link>
@@ -34,9 +34,9 @@ const About = () => {
       </p>
 
       <p className={paragraphStyle}>
-        In my spare time, I&apos;m using climbing, training for my next
-        marathon, or playing Teamfight Tactics (I&apos;m a big fan of games by
-        Riot Games).
+        In my spare time, I&apos;m using climbing rocks, training for my next
+        marathon, or playing Teamfight Tactics. You can learn more about me
+        below or and my work or feel free to contact me through email.
       </p>
     </div>
   );

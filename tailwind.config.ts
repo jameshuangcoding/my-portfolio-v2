@@ -14,12 +14,14 @@ export default {
           primary: '#FAFAFA',    // Main background
           secondary: '#F5F5F5',  // Secondary background
           accent: '#FFFFFF',     // Pure white for contrast when needed
+          tertiary: '#FF6B35',   // Neon orange accent
         },
         // Rich blacks (avoiding pure black)
         dark: {
           primary: '#121212',    // Main background
           secondary: '#1A1A1A',  // Secondary background
           accent: '#242424',     // Lighter dark for contrast
+          tertiary: '#FF8C5A',   // Lighter neon orange for dark mode
         },
         // Sophisticated grays
         gray: {
