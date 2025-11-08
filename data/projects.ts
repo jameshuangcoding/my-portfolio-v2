@@ -7,6 +7,12 @@ export interface Project {
 
 export const projects: Project[] = [
   {
+    title: 'EtherTrack',
+    description: 'DeFi portfolio tracker for Ethereum wallet assets',
+    link: 'https://ethertrack1.vercel.app/',
+    image: '/ethertrack.png',
+  },
+  {
     title: 'RaceFetch',
     description:
       'Discord Bot for fetching NYRR current race and volunteer calendar',
