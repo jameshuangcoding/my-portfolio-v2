@@ -13,7 +13,7 @@ const About = () => {
       </p>
 
       <p className={paragraphStyle}>
-        Currently, I&apos;m a software engineer intern at{' '}
+        Currently, I&apos;m a software engineer at{' '}
         <Link
           href='https://www.verygoodsecurity.com/'
           className='text-light-tertiary dark:text-dark-tertiary hover:underline transition-colors duration-200'
