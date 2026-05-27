@@ -21,12 +21,12 @@ const NavBar = () => {
     document.documentElement.classList.toggle('dark', isDark);
 
     console.log(
-      '%cThanks for poking around the source.',
-      'color:#E2531E;font-size:13px;font-weight:600;font-family:Georgia,serif;'
+      '%chey welcome to my page :)',
+      'color:#E2531E;font-size:13px;font-weight:600;font-family:Georgia,serif;',
     );
     console.log(
-      "%cIf you want to talk shop or you're hiring: jhuang4647@gmail.com",
-      'color:#7C7263;font-size:12px;font-family:Georgia,serif;'
+      "%cif you want to connect or you're hiring: jhuang4647@gmail.com",
+      'color:#7C7263;font-size:12px;font-family:Georgia,serif;',
     );
   }, []);
 
@@ -43,11 +43,11 @@ const NavBar = () => {
   return (
     <nav
       className='md:sticky md:top-0 md:w-44 lg:w-52 md:shrink-0
-      flex flex-row md:flex-col justify-between md:justify-start items-center md:items-start
-      gap-4 md:gap-5 px-5 md:px-8 py-5 md:py-24'
+      flex flex-row md:flex-col items-center md:items-start justify-between md:justify-start
+      gap-3 md:gap-5 px-4 sm:px-5 md:px-8 py-4 md:py-24'
     >
       {/* Page links */}
-      <ul className='flex flex-row md:flex-col gap-x-5 gap-y-1 flex-wrap'>
+      <ul className='flex flex-row md:flex-col flex-nowrap items-center md:items-start gap-x-3 sm:gap-x-5 gap-y-1 min-w-0'>
         {navLinks.map((navLink) => {
           const active = isActive(navLink.path);
           return (
@@ -55,7 +55,7 @@ const NavBar = () => {
               <Link
                 href={navLink.path}
                 aria-current={active ? 'page' : undefined}
-                className={`group inline-flex items-center gap-2 text-[length:var(--step-0)] transition-colors duration-200
+                className={`group inline-flex items-center gap-2 whitespace-nowrap text-sm md:text-[length:var(--step-0)] transition-colors duration-200
                 ${
                   active
                     ? 'text-light-tertiary dark:text-dark-tertiary'
@@ -76,10 +76,10 @@ const NavBar = () => {
       {/* Theme toggle */}
       <button
         onClick={toggleDarkMode}
-        className='text-lg text-gray-500 dark:text-gray-400 hover:text-light-tertiary dark:hover:text-dark-tertiary transition-all duration-200 hover:rotate-12'
+        className='shrink-0 flex items-center justify-center leading-none text-lg text-gray-500 dark:text-gray-400 hover:text-light-tertiary dark:hover:text-dark-tertiary transition-all duration-200 hover:rotate-12'
         aria-label='Toggle dark mode'
       >
-        {mounted ? (darkMode ? <FaRegMoon /> : <FaMoon />) : <FaMoon />}
+        {mounted ? darkMode ? <FaRegMoon /> : <FaMoon /> : <FaMoon />}
       </button>
     </nav>
   );
