@@ -12,3 +12,97 @@
     margin: 0;
     padding: 0;
 }
+
+:root {
+    /* Fluid type scale (minor third), driven by viewport */
+    --step--1: clamp(0.83rem, 0.79rem + 0.18vw, 0.94rem);
+    --step-0:  clamp(1rem, 0.95rem + 0.26vw, 1.15rem);
+    --step-1:  clamp(1.2rem, 1.12rem + 0.4vw, 1.44rem);
+    --step-2:  clamp(1.44rem, 1.31rem + 0.64vw, 1.8rem);
+    --step-3:  clamp(1.73rem, 1.53rem + 0.98vw, 2.25rem);
+    --step-4:  clamp(2.07rem, 1.78rem + 1.46vw, 2.81rem);
+    --step-5:  clamp(2.49rem, 2.06rem + 2.13vw, 3.52rem);
+
+    --measure: 62ch;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    font-family: var(--font-newsreader), Georgia, serif;
+    font-optical-sizing: auto;
+    font-size: var(--step-0);
+    line-height: 1.65;
+    letter-spacing: 0.003em;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: 'kern', 'liga', 'onum' 1;
+}
+
+/* Display typeface: Fraunces, with its soft/wonky personality and optical sizing */
+.font-display {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.012em;
+}
+
+/* Faint paper grain — atmosphere instead of a flat fill. Sits above the
+   background, below content, and never intercepts pointer events. */
+body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 160px 160px;
+}
+
+.dark body::before {
+    opacity: 0.06;
+    mix-blend-mode: screen;
+}
+
+/* Keep page content above the grain layer */
+body > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Staggered entrance — one orchestrated page-load reveal */
+@keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.stagger > * {
+    opacity: 0;
+    animation: rise 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.stagger > *:nth-child(1)  { animation-delay: 0.04s; }
+.stagger > *:nth-child(2)  { animation-delay: 0.10s; }
+.stagger > *:nth-child(3)  { animation-delay: 0.16s; }
+.stagger > *:nth-child(4)  { animation-delay: 0.22s; }
+.stagger > *:nth-child(5)  { animation-delay: 0.28s; }
+.stagger > *:nth-child(6)  { animation-delay: 0.34s; }
+.stagger > *:nth-child(7)  { animation-delay: 0.40s; }
+.stagger > *:nth-child(8)  { animation-delay: 0.46s; }
+.stagger > *:nth-child(9)  { animation-delay: 0.52s; }
+.stagger > *:nth-child(n+10) { animation-delay: 0.58s; }
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

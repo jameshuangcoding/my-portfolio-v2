@@ -9,37 +9,37 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Slightly off-white shades
+        // Warm ivory / paper shades
         light: {
-          primary: '#FAFAFA',    // Main background
-          secondary: '#F5F5F5',  // Secondary background
-          accent: '#FFFFFF',     // Pure white for contrast when needed
-          tertiary: '#FF6B35',   // Neon orange accent
+          primary: '#FBF8F1',    // Warm ivory — main background
+          secondary: '#F3EDE0',  // Deeper paper — secondary surfaces
+          accent: '#FFFDF8',     // Near-white for raised contrast
+          tertiary: '#E2531E',   // Refined vermillion-orange accent
         },
-        // Rich blacks (avoiding pure black)
+        // Warm near-blacks (tinted warm, avoiding pure black)
         dark: {
-          primary: '#121212',    // Main background
-          secondary: '#1A1A1A',  // Secondary background
-          accent: '#242424',     // Lighter dark for contrast
-          tertiary: '#FF8C5A',   // Lighter neon orange for dark mode
+          primary: '#16130F',    // Warm near-black — main background
+          secondary: '#1E1A14',  // Secondary surfaces
+          accent: '#2A251D',     // Raised contrast
+          tertiary: '#FF8C5A',   // Lighter warm orange for dark mode
         },
-        // Sophisticated grays
+        // Warm taupe-tinted gray scale
         gray: {
-          50:  '#F9FAFB',
-          100: '#F3F4F6',
-          200: '#E5E7EB',
-          300: '#D1D5DB',
-          400: '#9CA3AF',
-          500: '#6B7280',
-          600: '#4B5563',
-          700: '#374151',
-          800: '#1F2937',
-          900: '#111827',
+          50:  '#FAF7F0',
+          100: '#F1EBDF',
+          200: '#E2DACB',
+          300: '#CABFAC',
+          400: '#A89D8A',
+          500: '#7C7263',
+          600: '#5E554A',
+          700: '#473F36',
+          800: '#2E2820',
+          900: '#1C1812',
         },
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],  // Body text
-        display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],  // Headlines
+        sans: ['var(--font-newsreader)', 'Georgia', 'serif'],   // Body text
+        display: ['var(--font-fraunces)', 'Georgia', 'serif'],  // Headlines
       },
     },
   },

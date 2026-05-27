@@ -1,5 +1,4 @@
 export interface Experience {
-  icon: string;
   company: string;
   team: string;
   time: string;
@@ -8,28 +7,24 @@ export interface Experience {
 
 export const experiences: Experience[] = [
   {
-    icon: '/vgs-icon.png',
     company: 'VGS',
     team: 'Engineering',
-    time: 'Current',
+    time: '2025',
     link: 'https://www.verygoodsecurity.com/',
   },
   {
-    icon: '/cni-icon.png',
     company: 'Chickasaw Nation Industries',
     team: 'Engineering',
     time: '2024-2025',
     link: 'https://www.chickasaw.com/',
   },
   {
-    icon: '/dev-overflow-icon.png',
     company: 'Dev-Overflow',
     team: 'Engineering',
-    time: '2023-24',
+    time: '2023-2024',
     link: 'https://www.linkedin.com/company/dev-overflow/',
   },
   {
-    icon: '/oslabs-icon.png',
     company: 'OSLabs',
     team: 'Engineering',
     time: '2023',

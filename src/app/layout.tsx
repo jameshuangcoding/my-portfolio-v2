@@ -1,17 +1,22 @@
 import type { Metadata } from 'next';
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import { Fraunces, Newsreader } from 'next/font/google';
 import './globals.css';
 import NavBar from '../../components/NavBar';
 import Footer from '../../components/Footer';
 
-const inter = Inter({
+const fraunces = Fraunces({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-fraunces',
+  display: 'swap',
+  style: ['normal', 'italic'],
+  axes: ['SOFT', 'WONK', 'opsz'],
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const newsreader = Newsreader({
   subsets: ['latin'],
-  variable: '--font-plus-jakarta',
+  variable: '--font-newsreader',
+  display: 'swap',
+  style: ['normal', 'italic'],
 });
 
 export const metadata: Metadata = {
@@ -41,11 +46,13 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${plusJakarta.variable} bg-light-primary dark:bg-dark-primary min-h-screen`}>
-        <div className="relative min-h-screen flex flex-col">
-          <div className='flex-1'>
-            <NavBar />
-            <div className='m-auto max-w-2xl px-4 md:px-6 lg:px-8 xl:px-10'>{children}</div>
+      <body className={`${fraunces.variable} ${newsreader.variable} bg-light-primary dark:bg-dark-primary min-h-screen`}>
+        <div className='relative min-h-screen flex flex-col md:flex-row'>
+          <NavBar />
+          <div className='flex-1 flex flex-col min-h-screen'>
+            <main className='flex-1 w-full max-w-2xl px-5 md:px-10 lg:px-16 pt-6 md:pt-24 pb-10'>
+              {children}
+            </main>
             <Footer />
           </div>
         </div>

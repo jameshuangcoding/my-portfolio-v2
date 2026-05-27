@@ -1,28 +1,23 @@
-import { FaLinkedin } from 'react-icons/fa';
-import { IoLogoGithub } from 'react-icons/io';
-import { IoIosMail } from 'react-icons/io';
-import { FaFileContract } from 'react-icons/fa6';
-
 export interface Link {
   path: string;
-  icon: React.ReactNode;
+  name: string;
 }
 
 export const links: Link[] = [
   {
     path: 'https://www.linkedin.com/in/jameshuang07/',
-    icon: <FaLinkedin />,
+    name: 'LinkedIn',
   },
   {
     path: 'https://github.com/jameshuangcoding',
-    icon: <IoLogoGithub />,
+    name: 'GitHub',
   },
   {
     path: 'mailto:jhuang4647@gmail.com',
-    icon: <IoIosMail />,
+    name: 'Email',
   },
   {
     path: 'resume.pdf',
-    icon: <FaFileContract />,
+    name: 'Résumé',
   },
 ];
