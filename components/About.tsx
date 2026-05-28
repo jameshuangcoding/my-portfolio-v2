@@ -16,37 +16,31 @@ const About = () => {
       </header>
 
       <p className={paragraphStyle}>
-        I&apos;m a software engineer passionate about building tools that
-        simplify the complexities of technology. My favorite work involves
-        helping people whether it be developers, teams or anyone looking to use
-        technology to their advantage.
-      </p>
-
-      <p className={paragraphStyle}>
-        Currently, I&apos;m a software engineer at{' '}
+        I&apos;m James, a full-stack engineer most recently at{' '}
         <Link
           href='https://www.verygoodsecurity.com/'
           className='text-light-tertiary dark:text-dark-tertiary hover:underline transition-colors duration-200'
         >
           VGS
-        </Link>
-        , specializing in developer velocity. As part of the Release Team, I
-        focus on release reliability and CI/CD optimization, helping engineering
-        teams build and ship without spending time fighting legacy pipelines.
+        </Link>{' '}
+        focused on improving developer velocity through CI/CD pipeline
+        modernization by eliminating frustrating infrastructure so engineers
+        could build and ship with ease. Before that, I worked at early-stage
+        startups building tools for fintech and the open source community.
       </p>
 
       <p className={paragraphStyle}>
-        I&apos;m also pursuing a Master&apos;s in Computer Science at Georgia
-        Tech, focusing on machine learning and artificial intelligence.
-        I&apos;m particularly interested in applying AI, backend engineering and
-        DevOps to build intelligent systems and the infrastructure to support
-        model deployment for real-world impact.
+        My interests span backend systems, DevOps and machine learning and
+        I&apos;m currently deepening my AI/ML foundations through my
+        Master&apos;s in CS at Georgia Tech. Long term, I&apos;m interested in
+        working at the intersection of all three, specifically MLOps and AI
+        infrastructure.
       </p>
 
       <p className={paragraphStyle}>
-        In my spare time, I&apos;m usually climbing rocks, training for my next
-        marathon, or playing Teamfight Tactics. Feel free to reach out through
-        any of the links below.
+        Outside of work and school, I&apos;m usually training for my next
+        marathon, cooking food from scratch, or traveling the world. Feel free
+        to reach out through the links below.
       </p>
 
       <nav className='flex flex-wrap items-center gap-x-5 gap-y-1 mt-3 text-[length:var(--step--1)]'>

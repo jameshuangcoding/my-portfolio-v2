@@ -39,7 +39,7 @@ export const projects: Project[] = [
   },
   {
     title: 'jameshuang.dev (v1)',
-    description: 'Current portfolio site built with Next.js',
+    description: 'Previous version 1 of portfolio site',
     link: 'https://github.com/jameshuangcoding/my-portfolio',
   },
 ];
