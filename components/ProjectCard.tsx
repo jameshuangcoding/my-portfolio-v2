@@ -30,7 +30,12 @@ const ProjectCard = ({ project }: { project: Project }) => {
   }
 
   return (
-    <Link href={project.link} className="group block">
+    <Link
+      href={project.link}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block"
+    >
       {inner}
     </Link>
   );

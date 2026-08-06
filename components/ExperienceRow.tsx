@@ -3,7 +3,12 @@ import { Experience } from '../data/experiences';
 
 const ExperienceRow = ({ exp }: { exp: Experience }) => {
   return (
-    <Link href={exp.link} className='group block'>
+    <Link
+      href={exp.link}
+      target='_blank'
+      rel='noopener noreferrer'
+      className='group block'
+    >
       <div className='flex flex-row gap-4 md:gap-6 border-t border-gray-200 dark:border-gray-700 py-3'>
         <span className='w-20 md:w-24 shrink-0 pt-0.5 text-[length:var(--step--1)] font-sans text-gray-500 dark:text-gray-400 tabular-nums'>
           {exp.time}

@@ -17,7 +17,7 @@ export const links: Link[] = [
     name: 'Email',
   },
   {
-    path: 'resume.pdf',
+    path: '/resume.pdf',
     name: 'Résumé',
   },
 ];
