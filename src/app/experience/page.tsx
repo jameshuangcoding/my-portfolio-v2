@@ -1,7 +1,11 @@
 import Experience from '../../../components/Experience';
 
 const ExperiencePage = () => {
-  return <Experience />;
+  return (
+    <div className='max-w-2xl'>
+      <Experience />
+    </div>
+  );
 };
 
 export default ExperiencePage;

@@ -1,6 +1,6 @@
 const Writing = () => {
   return (
-    <div className='stagger text-gray-900 dark:text-gray-50'>
+    <div className='stagger text-gray-900 dark:text-gray-50 max-w-2xl'>
       <h1 className='font-display text-[length:var(--step-3)] mb-2 font-medium tracking-tight'>
         Writing
       </h1>

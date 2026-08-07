@@ -1,7 +1,11 @@
 import Projects from '../../../components/Projects';
 
 const ProjectsPage = () => {
-  return <Projects />;
+  return (
+    <div className='max-w-2xl'>
+      <Projects />
+    </div>
+  );
 };
 
 export default ProjectsPage;

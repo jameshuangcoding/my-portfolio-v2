@@ -12,6 +12,7 @@ const NavBar = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing with localStorage/matchMedia on mount
     setMounted(true);
     const isDark =
       localStorage.theme === 'dark' ||

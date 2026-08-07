@@ -8,7 +8,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
   const inner = (
     <div className="flex flex-row justify-between items-baseline gap-4 border-t border-gray-200 dark:border-gray-700 py-3">
       <div className="min-w-0">
-        <h3 className="text-[length:var(--step-1)] font-display font-medium text-gray-900 dark:text-gray-50 group-hover:text-light-tertiary dark:group-hover:text-dark-tertiary transition-colors">
+        <h3 className="text-[length:var(--step-0)] font-sans font-medium text-gray-900 dark:text-gray-50 group-hover:text-light-tertiary dark:group-hover:text-dark-tertiary transition-colors">
           {project.title}
         </h3>
         <p className="text-[length:var(--step--1)] text-gray-500 dark:text-gray-400 font-sans mt-0.5">
