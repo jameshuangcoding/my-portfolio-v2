@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "postinstall": "mkdir -p public/maplibre && cp node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs node_modules/maplibre-gl/dist/maplibre-gl-shared.mjs public/maplibre/"
+    "postinstall": "mkdir -p public/maplibre && cp node_modules/maplibre-gl/dist/maplibre-gl-worker.mjs node_modules/maplibre-gl/dist/maplibre-gl-shared.mjs public/maplibre/",
+    "fetch-country-boundaries": "node scripts/fetch-country-boundaries.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.744.0",
@@ -26,6 +27,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.0",
+    "mapshaper": "^0.7.51",
+    "osmtogeojson": "^2.2.12",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.7.3"

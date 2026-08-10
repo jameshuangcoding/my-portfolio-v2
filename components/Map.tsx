@@ -134,10 +134,21 @@ const Map = () => {
         data: '/data/countries.geojson',
       });
 
-      // Insert below the first label layer so place names stay readable.
-      const firstSymbolLayerId = map
-        .getStyle()
-        ?.layers?.find((layer) => layer.type === 'symbol')?.id;
+      // Insert below the basemap's own water layer (not just below labels)
+      // so its authoritative coastline — drawn from the same OSM data as
+      // everything else in the style — paints over any part of our fill
+      // that oversteps into the sea, instead of our highlight bleeding
+      // visibly into water. Falls back to the first label layer if the
+      // style's water layer can't be found (defensive; both bundled styles
+      // have one).
+      const styleLayers = map.getStyle()?.layers;
+      const waterLayerId = styleLayers?.find(
+        (layer) => layer.id === 'water',
+      )?.id;
+      const firstSymbolLayerId = styleLayers?.find(
+        (layer) => layer.type === 'symbol',
+      )?.id;
+      const beforeId = waterLayerId ?? firstSymbolLayerId;
 
       map.addLayer(
         {
@@ -156,7 +167,7 @@ const Map = () => {
             'fill-opacity': 0.5,
           },
         },
-        firstSymbolLayerId,
+        beforeId,
       );
 
       map.addLayer(
@@ -170,7 +181,7 @@ const Map = () => {
             'line-width': 0.5,
           },
         },
-        firstSymbolLayerId,
+        beforeId,
       );
     };
 
