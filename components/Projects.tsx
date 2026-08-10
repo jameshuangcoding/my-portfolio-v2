@@ -4,9 +4,9 @@ import ProjectCard from "./ProjectCard";
 const Projects = () => {
   return (
     <div className="stagger text-gray-900 dark:text-gray-50">
-      <h1 className="font-display text-[length:var(--step-3)] mb-6 font-medium tracking-tight">Projects</h1>
+      <h1 className="hidden md:block font-display text-[length:var(--step-3)] mb-6 font-medium tracking-tight">Projects</h1>
       {projects.map((project, i) => (
-        <ProjectCard key={i} project={project} />
+        <ProjectCard key={i} project={project} isFirst={i === 0} />
       ))}
     </div>
   );

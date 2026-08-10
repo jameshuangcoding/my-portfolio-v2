@@ -46,11 +46,11 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${fraunces.variable} ${newsreader.variable} bg-light-primary dark:bg-dark-primary min-h-screen`}>
-        <div className='relative min-h-screen flex flex-col md:flex-row'>
+      <body className={`${fraunces.variable} ${newsreader.variable} bg-light-primary dark:bg-dark-primary min-h-dvh`}>
+        <div className='relative min-h-dvh flex flex-col md:flex-row'>
           <NavBar />
-          <div className='flex-1 flex flex-col min-h-screen'>
-            <main className='flex-1 w-full px-5 md:px-10 lg:px-16 pt-6 md:pt-24 pb-10'>
+          <div className='flex-1 flex flex-col'>
+            <main className='flex flex-1 flex-col w-full px-5 md:px-10 lg:px-16 pt-6 md:pt-24 pb-10'>
               {children}
             </main>
             <Footer />

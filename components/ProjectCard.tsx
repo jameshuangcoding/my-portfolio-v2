@@ -2,11 +2,20 @@ import Link from "next/link";
 import { Project } from "../data/projects";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 
-const ProjectCard = ({ project }: { project: Project }) => {
+const ProjectCard = ({
+  project,
+  isFirst,
+}: {
+  project: Project;
+  isFirst?: boolean;
+}) => {
   const hasLink = project.link.trim() !== "";
+  const borderClass = isFirst
+    ? ""
+    : "border-t border-gray-200 dark:border-gray-700";
 
   const inner = (
-    <div className="flex flex-row justify-between items-baseline gap-4 border-t border-gray-200 dark:border-gray-700 py-3">
+    <div className="flex flex-row justify-between items-baseline gap-4 py-3">
       <div className="min-w-0">
         <h3 className="text-[length:var(--step-0)] font-sans font-medium text-gray-900 dark:text-gray-50 group-hover:text-light-tertiary dark:group-hover:text-dark-tertiary transition-colors">
           {project.title}
@@ -26,7 +35,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
   );
 
   if (!hasLink) {
-    return <div className="group">{inner}</div>;
+    return <div className={`group ${borderClass}`}>{inner}</div>;
   }
 
   return (
@@ -34,7 +43,7 @@ const ProjectCard = ({ project }: { project: Project }) => {
       href={project.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="group block"
+      className={`group block ${borderClass}`}
     >
       {inner}
     </Link>

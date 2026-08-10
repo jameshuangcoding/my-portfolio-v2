@@ -95,6 +95,40 @@ body > * {
 .stagger > *:nth-child(9)  { animation-delay: 0.52s; }
 .stagger > *:nth-child(n+10) { animation-delay: 0.58s; }
 
+/* Recolor maplibre's default (light-only) popup chrome to match the site
+   palette instead of the library's plain white card. */
+.maplibregl-popup-content {
+    background: #FFFDF8; /* light.accent */
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    box-shadow: 0 4px 16px rgba(28, 24, 18, 0.15);
+}
+
+.maplibregl-popup-anchor-top .maplibregl-popup-tip { border-bottom-color: #FFFDF8; }
+.maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: #FFFDF8; }
+.maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: #FFFDF8; }
+.maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: #FFFDF8; }
+
+.maplibregl-popup-close-button {
+    color: #7C7263; /* gray.500 */
+    font-size: 1rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.dark .maplibregl-popup-content {
+    background: #2A251D; /* dark.accent */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.dark .maplibregl-popup-anchor-top .maplibregl-popup-tip { border-bottom-color: #2A251D; }
+.dark .maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: #2A251D; }
+.dark .maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: #2A251D; }
+.dark .maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: #2A251D; }
+
+.dark .maplibregl-popup-close-button {
+    color: #A89D8A; /* gray.400 */
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
