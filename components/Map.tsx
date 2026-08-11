@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { FaGlobe } from 'react-icons/fa';
+import { FaCheck, FaGlobe, FaMapMarkerAlt } from 'react-icons/fa';
 import {
   Map as MapLibreMap,
   Marker,
@@ -42,6 +42,15 @@ const OUTLINE_LAYER_ID = 'visited-countries-outline';
 
 const PIN_CATEGORY_LIST = Object.keys(PIN_CATEGORIES) as PinCategory[];
 
+// Map markers are plain DOM elements (maplibre-gl owns them, not React), so
+// the FaMapMarkerAlt glyph used for the "Travel" toggle button is inlined
+// here as raw SVG rather than rendered as a component — same path/viewBox,
+// just set via innerHTML so pins on the map match the toggle icon exactly.
+const PIN_MARKER_ICON =
+  '<svg viewBox="0 0 384 512" fill="currentColor" width="100%" height="100%">' +
+  '<path d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"></path>' +
+  '</svg>';
+
 // Minimum zoom to fly to when a pin is clicked — never zooms out if the
 // user is already closer than this.
 const PIN_FOCUS_ZOOM = 7;
@@ -59,7 +68,7 @@ const WORLD_FIT_PADDING = 24;
 
 // Vertical breathing room between the reset-view button and whatever's
 // below it (the attribution control), in pixels.
-const RESET_BUTTON_GAP = 10;
+const RESET_BUTTON_GAP = 2.5;
 
 // Active-state border/text per category toggle button. Kept separate from
 // PIN_CATEGORIES' hex colors (used for the marker dots) since these are
@@ -193,19 +202,22 @@ const Map = () => {
         el.type = 'button';
         el.setAttribute('aria-label', pin.title);
         el.className =
-          'block h-3.5 w-3.5 rounded-full border-2 border-light-accent dark:border-dark-accent shadow-sm cursor-pointer transition-transform duration-150 hover:scale-125';
-        el.style.backgroundColor = dark ? color.dark : color.light;
+          'block h-5 w-5 origin-bottom cursor-pointer drop-shadow-sm transition-transform duration-150 hover:scale-125';
+        el.style.color = dark ? color.dark : color.light;
+        el.innerHTML = PIN_MARKER_ICON;
 
         const popup = new Popup({
-          offset: 14,
+          offset: 20,
           closeButton: true,
           maxWidth: '240px',
         }).setDOMContent(buildPopupContent(pin));
 
-        const marker = new Marker({ element: el }).setLngLat([
-          pin.lng,
-          pin.lat,
-        ]);
+        // Anchored at the icon's bottom tip (not its center) so the pin
+        // points exactly at the pin's coordinates, matching how the
+        // FaMapMarkerAlt teardrop shape is meant to sit on a map.
+        const marker = new Marker({ element: el, anchor: 'bottom' }).setLngLat(
+          [pin.lng, pin.lat],
+        );
 
         // Not bound via marker.setPopup() — clicking should fly to the pin
         // first and only reveal the popup once that camera move settles.
@@ -238,7 +250,7 @@ const Map = () => {
     const recolorPinMarkers = (dark: boolean) => {
       markersRef.current.forEach(({ el, category }) => {
         const color = PIN_CATEGORIES[category].color;
-        el.style.backgroundColor = dark ? color.dark : color.light;
+        el.style.color = dark ? color.dark : color.light;
       });
     };
 
@@ -347,10 +359,15 @@ const Map = () => {
     const map = mapRef.current;
     if (!map) return;
 
-    markersRef.current.forEach(({ marker, category }) => {
+    markersRef.current.forEach(({ marker, category, popup }) => {
       marker.remove();
       if (activeCategories.has(category)) {
         marker.addTo(map);
+      } else if (activePopupRef.current === popup) {
+        // The pin behind this open popup was just hidden — the popup would
+        // otherwise be left floating with no marker under it.
+        popup.remove();
+        activePopupRef.current = null;
       }
     });
   }, [activeCategories]);
@@ -378,17 +395,19 @@ const Map = () => {
   return (
     <div className='absolute inset-0'>
       <div ref={containerRef} className='h-full w-full' />
-      <div className='absolute top-3 right-3 z-10 flex flex-col items-end gap-2'>
+      <div className='absolute top-3 right-2.5 z-10 flex flex-col items-end gap-2'>
         <button
           onClick={() => setShowVisited((prev) => !prev)}
           aria-pressed={showVisited}
-          className={`rounded-full border px-3 py-1.5 font-sans text-[length:var(--step--2)] backdrop-blur-sm transition-colors duration-200 cursor-pointer bg-light-accent/90 dark:bg-dark-accent/90 ${
+          aria-label='Toggle visited countries'
+          title='Visited countries'
+          className={`flex h-6 w-6 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,color,background-color] duration-200 cursor-pointer bg-light-accent/90 dark:bg-dark-accent/90 hover:scale-110 ${
             showVisited
               ? 'border-light-tertiary/40 dark:border-dark-tertiary/40 text-light-tertiary dark:text-dark-tertiary'
               : 'border-gray-300/60 dark:border-gray-600/60 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50'
           }`}
         >
-          Visited countries
+          <FaCheck className='h-3 w-3' />
         </button>
         {PIN_CATEGORY_LIST.map((category) => {
           const active = activeCategories.has(category);
@@ -397,13 +416,15 @@ const Map = () => {
               key={category}
               onClick={() => toggleCategory(category)}
               aria-pressed={active}
-              className={`rounded-full border px-3 py-1.5 font-sans text-[length:var(--step--2)] backdrop-blur-sm transition-colors duration-200 cursor-pointer bg-light-accent/90 dark:bg-dark-accent/90 ${
+              aria-label={`Toggle ${PIN_CATEGORIES[category].label} pins`}
+              title={PIN_CATEGORIES[category].label}
+              className={`flex h-6 w-6 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,color,background-color] duration-200 cursor-pointer bg-light-accent/90 dark:bg-dark-accent/90 hover:scale-110 ${
                 active
                   ? PIN_BUTTON_STYLES[category]
                   : 'border-gray-300/60 dark:border-gray-600/60 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50'
               }`}
             >
-              {PIN_CATEGORIES[category].label}
+              <FaMapMarkerAlt className='h-3 w-3' />
             </button>
           );
         })}

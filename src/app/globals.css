@@ -129,6 +129,29 @@ body > * {
     color: #A89D8A; /* gray.400 */
 }
 
+/* The attribution control's collapsed "i" bubble bakes its icon into a
+   background-image (not currentColor), so — like the popup chrome above —
+   each mode needs its own data-URI copy with the fill inlined to match the
+   site's other floating map controls instead of the library's plain
+   white-circle/black-icon default. */
+.maplibregl-ctrl-attrib-button {
+    background-color: #FFFDF8; /* light.accent */
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath fill='%237C7263' d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");
+}
+
+.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button {
+    background-color: rgba(28, 24, 18, 0.06);
+}
+
+.dark .maplibregl-ctrl-attrib-button {
+    background-color: #2A251D; /* dark.accent */
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill-rule='evenodd' viewBox='0 0 20 20'%3E%3Cpath fill='%23A89D8A' d='M4 10a6 6 0 1 0 12 0 6 6 0 1 0-12 0m5-3a1 1 0 1 0 2 0 1 1 0 1 0-2 0m0 3a1 1 0 1 1 2 0v3a1 1 0 1 1-2 0'/%3E%3C/svg%3E");
+}
+
+.dark .maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-button {
+    background-color: rgba(255, 253, 248, 0.1);
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
