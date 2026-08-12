@@ -96,12 +96,34 @@ body > * {
 .stagger > *:nth-child(n+10) { animation-delay: 0.58s; }
 
 /* Recolor maplibre's default (light-only) popup chrome to match the site
-   palette instead of the library's plain white card. */
-.maplibregl-popup-content {
+   palette instead of the library's plain white card. No padding: the photo
+   popup's image runs flush to the card edge, and overflow:hidden clips its
+   square corners to the card's own rounded ones instead of doubling up on
+   radii.
+   Selector is `.maplibregl-popup .maplibregl-popup-content` (not just
+   `.maplibregl-popup-content`) so its specificity beats maplibre-gl.css's
+   own `.maplibregl-popup-content{padding:15px 10px;...}` regardless of
+   which stylesheet chunk Next.js happens to load second — a bare
+   single-class selector here is a tie the library can win on source order
+   alone. */
+.maplibregl-popup .maplibregl-popup-content {
     background: #FFFDF8; /* light.accent */
-    border-radius: 0.5rem;
-    padding: 0.75rem;
+    border-radius: 0.625rem;
+    padding: 0;
+    overflow: hidden;
     box-shadow: 0 4px 16px rgba(28, 24, 18, 0.15);
+    animation: popup-in 0.15s ease-out both;
+}
+
+/* This is the content node maplibre persists per Popup instance and
+   reparents into a freshly-created container on every open (see
+   Popup.remove/_update), so animating it here — rather than
+   .maplibregl-popup, whose transform maplibre drives every frame for
+   position tracking — replays cleanly each time a pin is clicked without
+   fighting the popup's own positioning. */
+@keyframes popup-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .maplibregl-popup-anchor-top .maplibregl-popup-tip { border-bottom-color: #FFFDF8; }
@@ -109,13 +131,7 @@ body > * {
 .maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: #FFFDF8; }
 .maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: #FFFDF8; }
 
-.maplibregl-popup-close-button {
-    color: #7C7263; /* gray.500 */
-    font-size: 1rem;
-    padding: 0.25rem 0.5rem;
-}
-
-.dark .maplibregl-popup-content {
+.dark .maplibregl-popup .maplibregl-popup-content {
     background: #2A251D; /* dark.accent */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
@@ -124,10 +140,6 @@ body > * {
 .dark .maplibregl-popup-anchor-bottom .maplibregl-popup-tip { border-top-color: #2A251D; }
 .dark .maplibregl-popup-anchor-left .maplibregl-popup-tip { border-right-color: #2A251D; }
 .dark .maplibregl-popup-anchor-right .maplibregl-popup-tip { border-left-color: #2A251D; }
-
-.dark .maplibregl-popup-close-button {
-    color: #A89D8A; /* gray.400 */
-}
 
 /* The attribution control's collapsed "i" bubble bakes its icon into a
    background-image (not currentColor), so — like the popup chrome above —

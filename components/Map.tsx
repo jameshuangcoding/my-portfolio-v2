@@ -11,7 +11,6 @@ import {
 } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { visitedCountries } from '../data/visitedCountries';
-import { pins, PIN_CATEGORIES, type Pin, type PinCategory } from '../data/pins';
 
 // maplibre-gl-worker.mjs imports a sibling maplibre-gl-shared.mjs at runtime;
 // Turbopack's asset pipeline only copies the file we reference and doesn't
@@ -40,7 +39,28 @@ const PALETTE = {
 const FILL_LAYER_ID = 'visited-countries-fill';
 const OUTLINE_LAYER_ID = 'visited-countries-outline';
 
-const PIN_CATEGORY_LIST = Object.keys(PIN_CATEGORIES) as PinCategory[];
+// Photo pins are sourced from a single Cloudinary folder (portfolio-map/photos,
+// see scripts/generate-photo-geojson.mjs), so there's just one visual
+// treatment to theme — no per-category config needed.
+const PHOTO_COLOR = { light: '#0369A1', dark: '#38BDF8' } as const; // Tailwind sky-700 / sky-400
+
+const PHOTOS_URL = '/data/photos.geojson';
+
+interface PhotoProperties {
+  title: string;
+  photo: string;
+  photoFull: string;
+  publicId: string;
+}
+
+interface PhotoFeatureCollection {
+  type: 'FeatureCollection';
+  features: {
+    type: 'Feature';
+    geometry: { type: 'Point'; coordinates: [number, number] };
+    properties: PhotoProperties;
+  }[];
+}
 
 // Map markers are plain DOM elements (maplibre-gl owns them, not React), so
 // the FaMapMarkerAlt glyph used for the "Travel" toggle button is inlined
@@ -51,9 +71,15 @@ const PIN_MARKER_ICON =
   '<path d="M172.268 501.67C26.97 291.031 0 269.413 0 192 0 85.961 85.961 0 192 0s192 85.961 192 192c0 77.413-26.97 99.031-172.268 309.67-9.535 13.774-29.93 13.773-39.464 0zM192 272c44.183 0 80-35.817 80-80s-35.817-80-80-80-80 35.817-80 80 35.817 80 80 80z"></path>' +
   '</svg>';
 
-// Minimum zoom to fly to when a pin is clicked — never zooms out if the
-// user is already closer than this.
-const PIN_FOCUS_ZOOM = 7;
+// Minimum zoom to fly to when a pin is clicked — city/neighborhood scale,
+// close enough to actually place the photo, not just the metro area. Never
+// zooms out if the user is already closer than this.
+const PIN_FOCUS_ZOOM = 12;
+
+// flyTo/fitBounds's default speed (1.2) makes camera moves — pin-click
+// focus and the reset-to-world-view button — feel sluggish, especially
+// flying across continents. Pick up the pace.
+const FLY_SPEED = 3;
 
 // Lng/lat box spanning the inhabited world (poles excluded). The map fits
 // this on load/resize instead of a hand-tuned zoom constant, so the initial
@@ -70,38 +96,47 @@ const WORLD_FIT_PADDING = 24;
 // below it (the attribution control), in pixels.
 const RESET_BUTTON_GAP = 2.5;
 
-// Active-state border/text per category toggle button. Kept separate from
-// PIN_CATEGORIES' hex colors (used for the marker dots) since these are
-// static Tailwind classes and must appear literally for the JIT scanner.
-const PIN_BUTTON_STYLES: Record<PinCategory, string> = {
-  travel:
-    'border-sky-700/40 dark:border-sky-400/40 text-sky-700 dark:text-sky-400',
-};
+// Active-state border/text for the "Travel" toggle button. Kept separate
+// from PHOTO_COLOR (used for the marker icons) since these are static
+// Tailwind classes and must appear literally for the JIT scanner.
+const PHOTO_BUTTON_STYLE =
+  'border-sky-700/40 dark:border-sky-400/40 text-sky-700 dark:text-sky-400';
 
 const isDarkMode = () => document.documentElement.classList.contains('dark');
 
-const buildPopupContent = (pin: Pin) => {
+const buildPopupContent = ({ title, photo }: PhotoProperties) => {
+  // No padding/gap: the image runs flush to the card's edges (clipped to its
+  // rounded corners by .maplibregl-popup-content in globals.css) and the
+  // button sits directly beneath as a bottom tab, separated only by its own
+  // top border.
   const wrapper = document.createElement('div');
-  wrapper.className = 'w-52 space-y-2';
+  wrapper.className = 'w-40';
 
+  // Fixed 4:3 landscape box matching the smart-cropped source image (see
+  // generate-photo-geojson.mjs) so every popup has the same shape. object-cover
+  // is just a safety net for the box's own aspect rounding — Cloudinary's
+  // gravity: 'auto' crop already picked the interesting region server-side.
   const img = document.createElement('img');
-  img.src = pin.photo;
-  img.alt = pin.title;
+  img.src = photo;
+  img.alt = title;
   img.loading = 'lazy';
-  img.className = 'h-28 w-full rounded-md object-cover';
+  img.className =
+    'block aspect-[4/3] w-full bg-gray-100 dark:bg-gray-800 object-cover';
   wrapper.appendChild(img);
 
-  const title = document.createElement('p');
-  title.textContent = pin.title;
-  title.className =
-    'font-display text-[length:var(--step--1)] font-medium text-gray-900 dark:text-gray-50';
-  wrapper.appendChild(title);
+  // Placeholder trigger for a future full-image modal — not wired up yet.
+  // Held back until the image finishes loading so it doesn't appear before
+  // there's anything to view.
+  const viewButton = document.createElement('button');
+  viewButton.type = 'button';
+  viewButton.textContent = 'View Image';
+  viewButton.className =
+    'block w-full cursor-pointer border-t border-gray-300/60 dark:border-gray-600/60 py-1 text-center font-sans text-[length:var(--step--1)] text-light-tertiary dark:text-dark-tertiary opacity-0 transition-[opacity,color,background-color] duration-200 hover:bg-gray-100 dark:hover:bg-gray-800';
+  wrapper.appendChild(viewButton);
 
-  const caption = document.createElement('p');
-  caption.textContent = pin.caption;
-  caption.className =
-    'font-sans text-[length:var(--step--2)] text-gray-600 dark:text-gray-400';
-  wrapper.appendChild(caption);
+  const revealButton = () => viewButton.classList.remove('opacity-0');
+  if (img.complete) revealButton();
+  else img.addEventListener('load', revealButton, { once: true });
 
   return wrapper;
 };
@@ -111,12 +146,10 @@ const Map = () => {
   const mapRef = useRef<MapLibreMap | null>(null);
   const [showVisited, setShowVisited] = useState(true);
   const showVisitedRef = useRef(showVisited);
-  const [activeCategories, setActiveCategories] = useState<Set<PinCategory>>(
-    () => new Set(PIN_CATEGORY_LIST),
-  );
-  const activeCategoriesRef = useRef(activeCategories);
+  const [showPhotos, setShowPhotos] = useState(true);
+  const showPhotosRef = useRef(showPhotos);
   const markersRef = useRef<
-    { marker: Marker; el: HTMLElement; category: PinCategory; popup: Popup }[]
+    { marker: Marker; el: HTMLElement; popup: Popup }[]
   >([]);
   const activePopupRef = useRef<Popup | null>(null);
   // Bumped on every pin click so a stale flyTo (superseded by a second,
@@ -194,64 +227,95 @@ const Map = () => {
       );
     };
 
-    const addPinMarkers = (map: MapLibreMap, dark: boolean) => {
-      pins.forEach((pin) => {
-        const color = PIN_CATEGORIES[pin.category].color;
+    // Every photo always gets its own marker — no bubble/count clustering.
+    // When several are geographically close they simply overlap on screen
+    // (later markers stack on top in DOM order), and clicking whichever is
+    // on top flies straight to its exact coordinates. Markers are plain DOM
+    // nodes independent of the map style, so this only needs to run once on
+    // initial load, not on every style reload.
+    const addPhotoMarkers = async (map: MapLibreMap) => {
+      const data: PhotoFeatureCollection = await fetch(PHOTOS_URL).then((r) =>
+        r.json(),
+      );
+      const dark = isDarkMode();
+
+      data.features.forEach(({ geometry, properties }) => {
+        const [lng, lat] = geometry.coordinates;
 
         const el = document.createElement('button');
         el.type = 'button';
-        el.setAttribute('aria-label', pin.title);
+        el.setAttribute('aria-label', properties.title);
         el.className =
           'block h-5 w-5 origin-bottom cursor-pointer drop-shadow-sm transition-transform duration-150 hover:scale-125';
-        el.style.color = dark ? color.dark : color.light;
+        el.style.color = dark ? PHOTO_COLOR.dark : PHOTO_COLOR.light;
         el.innerHTML = PIN_MARKER_ICON;
 
         const popup = new Popup({
           offset: 20,
-          closeButton: true,
-          maxWidth: '240px',
-        }).setDOMContent(buildPopupContent(pin));
+          closeButton: false,
+          maxWidth: '160px',
+        }).setDOMContent(buildPopupContent(properties));
 
         // Anchored at the icon's bottom tip (not its center) so the pin
         // points exactly at the pin's coordinates, matching how the
         // FaMapMarkerAlt teardrop shape is meant to sit on a map.
-        const marker = new Marker({ element: el, anchor: 'bottom' }).setLngLat([
-          pin.lng,
-          pin.lat,
-        ]);
+        const marker = new Marker({ element: el, anchor: 'bottom' }).setLngLat(
+          [lng, lat],
+        );
 
         // Not bound via marker.setPopup() — clicking should fly to the pin
         // first and only reveal the popup once that camera move settles.
-        el.addEventListener('click', () => {
+        // But if the pin is already comfortably in view (already zoomed to
+        // city level and on screen), skip the flyTo entirely — re-centering
+        // the map on every click of a visible pin is disorienting busywork;
+        // the popup alone is enough to show which pin was picked.
+        el.addEventListener('click', (event) => {
+          // Marker buttons sit inside the map container, so an unstopped
+          // click bubbles up to it — and Popup's default closeOnClick
+          // listens for exactly that, closing whatever popup was just
+          // opened in the same tick. The flyTo branch dodges this by luck
+          // (its popup.addTo happens later, on 'moveend'), but the
+          // already-in-view branch adds the popup synchronously and needs
+          // this to not immediately self-close.
+          event.stopPropagation();
           activePopupRef.current?.remove();
+
+          const alreadyInView =
+            map.getZoom() >= PIN_FOCUS_ZOOM &&
+            map.getBounds().contains([lng, lat]);
+
+          if (alreadyInView) {
+            popup.setLngLat([lng, lat]).addTo(map);
+            activePopupRef.current = popup;
+            return;
+          }
+
           const token = ++pinClickTokenRef.current;
 
           map.flyTo({
-            center: [pin.lng, pin.lat],
+            center: [lng, lat],
             zoom: Math.max(map.getZoom(), PIN_FOCUS_ZOOM),
+            speed: FLY_SPEED,
           });
 
           map.once('moveend', () => {
             if (pinClickTokenRef.current !== token) return;
-            popup.setLngLat([pin.lng, pin.lat]).addTo(map);
+            popup.setLngLat([lng, lat]).addTo(map);
             activePopupRef.current = popup;
           });
         });
 
-        markersRef.current.push({ marker, el, category: pin.category, popup });
-
-        if (activeCategoriesRef.current.has(pin.category)) {
-          marker.addTo(map);
-        }
+        markersRef.current.push({ marker, el, popup });
+        if (showPhotosRef.current) marker.addTo(map);
       });
     };
 
     // Marker elements are plain DOM nodes independent of the map style, so
     // recoloring them on a theme switch is enough — no need to recreate.
-    const recolorPinMarkers = (dark: boolean) => {
-      markersRef.current.forEach(({ el, category }) => {
-        const color = PIN_CATEGORIES[category].color;
-        el.style.color = dark ? color.dark : color.light;
+    const recolorPhotoMarkers = (dark: boolean) => {
+      const color = dark ? PHOTO_COLOR.dark : PHOTO_COLOR.light;
+      markersRef.current.forEach(({ el }) => {
+        el.style.color = color;
       });
     };
 
@@ -265,9 +329,20 @@ const Map = () => {
     });
     mapRef.current = map;
 
+    // Popups are added manually (see addPhotoMarkers) rather than bound via
+    // marker.setPopup(), so none of maplibre's built-in auto-close behavior
+    // applies to them — dragging or zooming away otherwise leaves the popup
+    // floating over an unrelated part of the map.
+    const closeActivePopup = () => {
+      activePopupRef.current?.remove();
+      activePopupRef.current = null;
+    };
+    map.on('dragstart', closeActivePopup);
+    map.on('zoomstart', closeActivePopup);
+
     map.on('load', () => {
       addCountryLayers(map, isDarkMode());
-      addPinMarkers(map, isDarkMode());
+      addPhotoMarkers(map);
       // Fitted zoom becomes the floor so users can't zoom out past the
       // full-world view that was just computed for this container.
       map.setMinZoom(map.getZoom());
@@ -275,11 +350,13 @@ const Map = () => {
 
     // The site's dark-mode toggle just flips a class on <html>; watch for
     // that so the map swaps style/colors live instead of only on refresh.
+    // Photo markers are plain DOM overlays independent of the style, so
+    // they just need recoloring here, not recreating.
     const observer = new MutationObserver(() => {
       const nowDark = isDarkMode();
       map.setStyle(nowDark ? DARK_STYLE : LIGHT_STYLE);
       map.once('style.load', () => addCountryLayers(map, nowDark));
-      recolorPinMarkers(nowDark);
+      recolorPhotoMarkers(nowDark);
     });
     observer.observe(document.documentElement, {
       attributes: true,
@@ -355,14 +432,14 @@ const Map = () => {
   }, [showVisited]);
 
   useEffect(() => {
-    activeCategoriesRef.current = activeCategories;
+    showPhotosRef.current = showPhotos;
 
     const map = mapRef.current;
     if (!map) return;
 
-    markersRef.current.forEach(({ marker, category, popup }) => {
+    markersRef.current.forEach(({ marker, popup }) => {
       marker.remove();
-      if (activeCategories.has(category)) {
+      if (showPhotos) {
         marker.addTo(map);
       } else if (activePopupRef.current === popup) {
         // The pin behind this open popup was just hidden — the popup would
@@ -371,26 +448,17 @@ const Map = () => {
         activePopupRef.current = null;
       }
     });
-  }, [activeCategories]);
-
-  const toggleCategory = (category: PinCategory) => {
-    setActiveCategories((prev) => {
-      const next = new Set(prev);
-      if (next.has(category)) {
-        next.delete(category);
-      } else {
-        next.add(category);
-      }
-      return next;
-    });
-  };
+  }, [showPhotos]);
 
   const resetView = () => {
     const map = mapRef.current;
     if (!map) return;
 
     activePopupRef.current?.remove();
-    map.fitBounds(WORLD_BOUNDS, { padding: WORLD_FIT_PADDING });
+    map.fitBounds(WORLD_BOUNDS, {
+      padding: WORLD_FIT_PADDING,
+      speed: FLY_SPEED,
+    });
   };
 
   return (
@@ -410,25 +478,19 @@ const Map = () => {
         >
           <FaCheck className='h-3 w-3' />
         </button>
-        {PIN_CATEGORY_LIST.map((category) => {
-          const active = activeCategories.has(category);
-          return (
-            <button
-              key={category}
-              onClick={() => toggleCategory(category)}
-              aria-pressed={active}
-              aria-label={`Toggle ${PIN_CATEGORIES[category].label} pins`}
-              title={PIN_CATEGORIES[category].label}
-              className={`flex h-6 w-6 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,color,background-color] duration-200 cursor-pointer bg-light-accent/90 dark:bg-dark-accent/90 hover:scale-110 ${
-                active
-                  ? PIN_BUTTON_STYLES[category]
-                  : 'border-gray-300/60 dark:border-gray-600/60 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50'
-              }`}
-            >
-              <FaMapMarkerAlt className='h-3 w-3' />
-            </button>
-          );
-        })}
+        <button
+          onClick={() => setShowPhotos((prev) => !prev)}
+          aria-pressed={showPhotos}
+          aria-label='Toggle travel pins'
+          title='Travel'
+          className={`flex h-6 w-6 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,color,background-color] duration-200 cursor-pointer bg-light-accent/90 dark:bg-dark-accent/90 hover:scale-110 ${
+            showPhotos
+              ? PHOTO_BUTTON_STYLE
+              : 'border-gray-300/60 dark:border-gray-600/60 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-50'
+          }`}
+        >
+          <FaMapMarkerAlt className='h-3 w-3' />
+        </button>
       </div>
       <button
         onClick={resetView}
