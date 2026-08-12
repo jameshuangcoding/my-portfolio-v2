@@ -215,9 +215,10 @@ const Map = () => {
         // Anchored at the icon's bottom tip (not its center) so the pin
         // points exactly at the pin's coordinates, matching how the
         // FaMapMarkerAlt teardrop shape is meant to sit on a map.
-        const marker = new Marker({ element: el, anchor: 'bottom' }).setLngLat(
-          [pin.lng, pin.lat],
-        );
+        const marker = new Marker({ element: el, anchor: 'bottom' }).setLngLat([
+          pin.lng,
+          pin.lat,
+        ]);
 
         // Not bound via marker.setPopup() — clicking should fly to the pin
         // first and only reveal the popup once that camera move settles.

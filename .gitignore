@@ -39,6 +39,9 @@ yarn-error.log*
 # raw Overpass responses cached by scripts/fetch-country-boundaries.mjs
 /scripts/.cache
 
+# local photo library for scripts/extract-photo-locations.mjs (not committed)
+/scripts/photos
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
